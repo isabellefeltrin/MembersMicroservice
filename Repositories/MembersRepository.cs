@@ -1,11 +1,11 @@
 ﻿
-using MembersMicroservice.;
+
 using MembersMicroservice.Database;
 using MembersMicroservice.Model;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Members.Repositories;
+namespace MembersMicroservice.Repositories;
 
 
 

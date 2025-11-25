@@ -1,45 +1,71 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using MembersMicroservice.Model;
 using Members.DTO.MembersDTO;
-using MembersService.Services;
+using MembersMicroservice.Repositories;
 
-
-namespace MembersService.Controllers
+namespace MembersMicroservice.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("api/[controller]")]
     public class MembersController : ControllerBase
     {
-        private readonly MembersService _service;
+        private readonly MembersRepository _repository;
 
-        public MembersController(MembersService service)
+        public MembersController(MembersRepository repository)
         {
-            _service = service;
+            _repository = repository;
+        }
+
+        private MembersModel MapToModel(MembersDTO dto)
+        {
+            var model = new MembersModel();
+
+             model.Name = dto.Name;
+             model.Email = dto.Email;
+
+
+            return model;
         }
 
         [HttpGet]
-        public IActionResult GetAll() => Ok(_service.GetAll());
+        public IActionResult GetAll()
+            => Ok(_repository.GetAll());
 
-        [HttpGet("{id}")]
+        [HttpGet("{id:int}")]
         public IActionResult GetById(int id)
         {
-            var member = _service.GetById(id);
+            var member = _repository.GetById(id);
             return member == null ? NotFound() : Ok(member);
         }
 
         [HttpPost]
-        public IActionResult Create(MembersDTO member) => Ok(_service.Create(member));
-
-        [HttpPut("{id}")]
-        public IActionResult Update(int id, MembersDTO member)
+        public IActionResult Create([FromBody] MembersDTO member)
         {
-            return _service.Update(id, member) ? Ok() : NotFound();
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var entity = MapToModel(member);
+            _repository.Create(entity);
+
+            return Ok(entity);
         }
 
-        [HttpDelete("{id}")]
-        public IActionResult Delete(int id)
+
+        [HttpPut("{id:int}")]
+        public IActionResult Update(int id, [FromBody] MembersDTO member)
         {
-            return _service.Delete(id) ? Ok() : NotFound();
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var existing = _repository.GetById(id);
+            if (existing == null)
+                return NotFound();
+
+            var entity = MapToModel(member);
+
+            _repository.Update(entity);
+
+            return NoContent();
         }
     }
 }

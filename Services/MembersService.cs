@@ -1,6 +1,6 @@
 ﻿
 using Members.DTO.MembersDTO;
-using Members.Repositories;
+using MembersMicroservice.Repositories;
 using MembersMicroservice.Database;
 using MembersMicroservice.Model;
 using System.Linq;
