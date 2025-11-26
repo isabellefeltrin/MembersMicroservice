@@ -1,7 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Members.DTO.MembersDTO;
 using MembersMicroservice.Model;
-using Members.DTO.MembersDTO;
 using MembersMicroservice.Repositories;
+using MembersMicroservice.Services;
+using Microsoft.AspNetCore.Mvc;
 
 namespace MembersMicroservice.Controllers
 {
@@ -9,62 +10,25 @@ namespace MembersMicroservice.Controllers
     [Route("api/[controller]")]
     public class MembersController : ControllerBase
     {
-        private readonly MembersRepository _repository;
+        private readonly MembersService _service;
 
-        public MembersController(MembersRepository repository)
+        public MembersController(MembersService service)
         {
-            _repository = repository;
+            _service = service;
         }
-
-        private MembersModel MapToModel(MembersDTO dto)
-        {
-            var model = new MembersModel();
-
-             model.Name = dto.Name;
-             model.Email = dto.Email;
-
-
-            return model;
-        }
-
-        [HttpGet]
-        public IActionResult GetAll()
-            => Ok(_repository.GetAll());
 
         [HttpGet("{id:int}")]
         public IActionResult GetById(int id)
         {
-            var member = _repository.GetById(id);
-            return member == null ? NotFound() : Ok(member);
+            var member = _service.GetById(id);
+            if (member == null) return NotFound();
+            return Ok(member);
         }
 
-        [HttpPost]
-        public IActionResult Create([FromBody] MembersDTO member)
+        [HttpPatch("{id:int}/active-loans")]
+        public IActionResult UpdateActiveLoans(int id, [FromBody] int newActiveLoans)
         {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
-
-            var entity = MapToModel(member);
-            _repository.Create(entity);
-
-            return Ok(entity);
-        }
-
-
-        [HttpPut("{id:int}")]
-        public IActionResult Update(int id, [FromBody] MembersDTO member)
-        {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
-
-            var existing = _repository.GetById(id);
-            if (existing == null)
-                return NotFound();
-
-            var entity = MapToModel(member);
-
-            _repository.Update(entity);
-
+            _service.UpdateActiveLoans(id, newActiveLoans);
             return NoContent();
         }
     }
