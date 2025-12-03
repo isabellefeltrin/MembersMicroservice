@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
@@ -7,13 +7,44 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Migrations\20251203153205_membes.cs" />
+    <Compile Remove="Migrations\20251203153205_membes.Designer.cs" />
+    <Compile Remove="Migrations\20251203154520_Members.cs" />
+    <Compile Remove="Migrations\20251203154520_Members.Designer.cs" />
+    <Compile Remove="Migrations\20251203154706_InitialCreate.cs" />
+    <Compile Remove="Migrations\20251203154706_InitialCreate.Designer.cs" />
+    <Compile Remove="Migrations\20251203154840_Inicial.cs" />
+    <Compile Remove="Migrations\20251203154840_Inicial.Designer.cs" />
+    <Compile Remove="Migrations\20251203155627_AddMembersTable.cs" />
+    <Compile Remove="Migrations\20251203155627_AddMembersTable.Designer.cs" />
+    <Compile Remove="Migrations\20251203160144_CreateMembers.cs" />
+    <Compile Remove="Migrations\20251203160144_CreateMembers.Designer.cs" />
+    <Compile Remove="Migrations\20251203160516_InitialCreate.cs" />
+    <Compile Remove="Migrations\20251203160516_InitialCreate.Designer.cs" />
+    <Compile Remove="Migrations\20251203160918_InitialCreate.cs" />
+    <Compile Remove="Migrations\20251203160918_InitialCreate.Designer.cs" />
+    <Compile Remove="Migrations\AppDbContextModelSnapshot.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="members.db" />
+    <None Remove="members.db-shm" />
+    <None Remove="members.db-wal" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="8.0.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="8.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Client\" />
+    <Folder Include="Migrations\" />
   </ItemGroup>
 
 </Project>

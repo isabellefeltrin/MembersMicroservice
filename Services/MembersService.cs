@@ -1,65 +1,39 @@
-﻿
-using Members.DTO.MembersDTO;
+﻿using MembersMicroservice.Models;
 using MembersMicroservice.Repositories;
-using MembersMicroservice.Database;
-using MembersMicroservice.Model;
-using System.Linq;
 
 namespace MembersMicroservice.Services
 {
     public class MembersService
     {
-        private readonly AppDbContext _context;
+        private readonly MembersRepository _repo;
 
-        public MembersService(AppDbContext context)
+        public MembersService(MembersRepository repo)
         {
-            _context = context;
+            _repo = repo;
         }
 
-        public List<MembersModel> GetAll()
+        public Task<List<MembersModel>> GetAll() => _repo.GetAll();
+
+        public Task<MembersModel?> GetById(int id) => _repo.GetById(id);
+
+        public Task<MembersModel> Create(MembersModel model)
         {
-            return _context.MembersModel.ToList();
+            return _repo.Create(model);
         }
 
-        public MembersModel GetById(int id)
+        public async Task<bool> IncrementarEmprestimos(int memberId)
         {
-            return _context.MembersModel.FirstOrDefault(m => m.Id == id);
-        }
-
-        public MembersModel Create(MembersDTO dto)
-        {
-            var member = new MembersModel
-            {
-                Name = dto.Name,
-                Email = dto.Email,
-            };
-
-            _context.MembersModel.Add(member);
-            _context.SaveChanges();
-            return member;
-        }
-
-        public bool Update(int id, MembersDTO updated)
-        {
-            var member = _context.MembersModel.FirstOrDefault(m => m.Id == id);
+            var member = await _repo.GetById(memberId);
             if (member == null) return false;
 
-            member.Name = updated.Name;
-            member.Email = updated.Email;
+            if (!member.Ativo) return false;
 
-            _context.SaveChanges();
-            return true;
-        }
+            if (member.EmprestimosAtivos >= member.LimiteEmprestimos)
+                return false;
 
-        public bool Delete(int id)
-        {
-            var member = _context.MembersModel.FirstOrDefault(m => m.Id == id);
-            if (member == null) return false;
-
-            _context.MembersModel.Remove(member);
-            _context.SaveChanges();
+            member.EmprestimosAtivos++;
+            await _repo.Update(member);
             return true;
         }
     }
 }
-

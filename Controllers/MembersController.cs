@@ -1,8 +1,6 @@
-﻿using Members.DTO.MembersDTO;
-using MembersMicroservice.Model;
-using MembersMicroservice.Repositories;
+﻿using Microsoft.AspNetCore.Mvc;
+using MembersMicroservice.Models;
 using MembersMicroservice.Services;
-using Microsoft.AspNetCore.Mvc;
 
 namespace MembersMicroservice.Controllers
 {
@@ -17,19 +15,33 @@ namespace MembersMicroservice.Controllers
             _service = service;
         }
 
-        [HttpGet("{id:int}")]
-        public IActionResult GetById(int id)
+        [HttpGet]
+        public async Task<IActionResult> GetAll()
         {
-            var member = _service.GetById(id);
+            return Ok(await _service.GetAll());
+        }
+
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetById(int id)
+        {
+            var member = await _service.GetById(id);
             if (member == null) return NotFound();
             return Ok(member);
         }
 
-        [HttpPatch("{id:int}/active-loans")]
-        public IActionResult UpdateActiveLoans(int id, [FromBody] int newActiveLoans)
+        [HttpPost]
+        public async Task<IActionResult> Create(MembersModel model)
         {
-            _service.UpdateActiveLoans(id, newActiveLoans);
-            return NoContent();
+            var created = await _service.Create(model);
+            return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
+        }
+
+        [HttpPatch("{id}/incrementar")]
+        public async Task<IActionResult> Incrementar(int id)
+        {
+            var sucesso = await _service.IncrementarEmprestimos(id);
+            if (!sucesso) return BadRequest("Não foi possível atualizar.");
+            return Ok("Atualizado com sucesso.");
         }
     }
 }
